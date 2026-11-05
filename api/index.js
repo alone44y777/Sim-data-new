@@ -11,17 +11,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Target API ka link encode kar rahe hain
-    const targetApi = encodeURIComponent(`https://pakdataonline.site.je/?action=search&num=${num}`);
+    // Original API link
+    const targetUrl = `https://pakdataonline.site.je/?action=search&num=${num}`;
     
-    // corsproxy.io ko as a middle-man use kar rahe hain block se bachne ke liye
-    const response = await fetch(`https://corsproxy.io/?${targetApi}`, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json'
-      }
-    });
+    // CodeTabs proxy use kar rahe hain (No API key required)
+    const response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${targetUrl}`);
 
     const textData = await response.text();
     
@@ -45,7 +39,7 @@ export default async function handler(req, res) {
     } catch (parseError) {
        res.status(500).json({
         "Devp": "NexGen Tech",
-        "error": "Proxy ke zariye bhi API ne HTML page (Block/Captcha) bhej diya hai.",
+        "error": "Source API abhi bhi block kar rahi hai (HTML page received).",
         "html_preview": textData.substring(0, 100)
       });
     }
@@ -57,5 +51,5 @@ export default async function handler(req, res) {
       "reason": error.message
     });
   }
-      }
-          
+          }
+      
